@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPR Volts - Gestão & Voluntariado IPR Veneza</title>
+  <meta name="description" content="Aplicativo oficial de gestão e voluntariado da IPR Veneza. Escalas, trocas, check-in e liturgia.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Brand Header -->
+    <header class="brand-header">
+      <div class="brand-logo">
+        <i data-lucide="zap"></i>
+      </div>
+      <h1 class="brand-title">IPR Volts</h1>
+      <p class="brand-subtitle">Portal de Voluntários & Gestão IPR Veneza</p>
+    </header>
+
+    <!-- Main Card -->
+    <div class="card-box" id="mainCard">
+      
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" id="navTabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">
+          <i data-lucide="log-in"></i> Entrar
+        </button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">
+          <i data-lucide="user-plus"></i> Cadastrar
+        </button>
+        <button class="tab-btn" id="tabRecovery" onclick="switchTab('recovery')">
+          <i data-lucide="key-round"></i> Esqueci a Senha
+        </button>
+      </nav>
+
+      <!-- SECTION 1: LOGIN -->
+      <section class="form-section active" id="secLogin">
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">E-mail ou Telefone</label>
+            <div class="input-wrapper">
+              <input type="text" id="loginEmail" class="form-input" placeholder="seu.email@exemplo.com ou (31) 9..." required>
+              <i data-lucide="mail" class="input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Senha</label>
+            <div class="input-wrapper">
+              <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+              <i data-lucide="lock" class="input-icon"></i>
+              <button type="button" class="input-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <label style="display: flex; align-items: center; gap: 6px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" id="rememberMe"> Lembrar de mim
+            </label>
+            <button type="button" class="link-btn" onclick="switchTab('recovery')">Esqueci minha senha</button>
+          </div>
+
+          <button type="submit" class="btn-primary">
+            Entrar no Sistema <i data-lucide="arrow-right"></i>
+          </button>
+        </form>
+      </section>
+
+      <!-- SECTION 2: CADASTRO -->
+      <section class="form-section" id="secRegister">
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label" for="regName">Nome Completo</label>
+            <div class="input-wrapper">
+              <input type="text" id="regName" class="form-input" placeholder="Seu nome completo" required>
+              <i data-lucide="user" class="input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">E-mail</label>
+            <div class="input-wrapper">
+              <input type="email" id="regEmail" class="form-input" placeholder="seu.email@exemplo.com" required>
+              <i data-lucide="mail" class="input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regDepartment">Departamento Principal</label>
+            <div class="input-wrapper">
+              <select id="regDepartment" class="form-input" style="appearance: none;" required>
+                <option value="">Selecione seu departamento...</option>
+                <option value="louvor">Ministério de Louvor & Cifra</option>
+                <option value="midia">Mídia & Som & Transmissão</option>
+                <option value="recepcao">Recepção & Boas-Vindas</option>
+                <option value="infantil">Ministério Infantil</option>
+                <option value="teatro">Teatro & Dança</option>
+                <option value="intercessao">Intercessão & Oração</option>
+              </select>
+              <i data-lucide="users" class="input-icon"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Senha de Acesso</label>
+            <div class="input-wrapper">
+              <input type="password" id="regPassword" class="form-input" placeholder="Crie uma senha segura" required>
+              <i data-lucide="lock" class="input-icon"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">
+            Criar Minha Conta <i data-lucide="user-check"></i>
+          </button>
+        </form>
+      </section>
+
+      <!-- SECTION 3: ESQUECI A SENHA (RECOVERY FLOW) -->
+      <section class="form-section" id="secRecovery">
+        
+        <!-- Step Tracker -->
+        <div class="step-tracker">
+          <div class="step-item active" id="stepIndicator1">1</div>
+          <div class="step-item" id="stepIndicator2">2</div>
+          <div class="step-item" id="stepIndicator3">3</div>
+          <div class="step-item" id="stepIndicator4">4</div>
+        </div>
+
+        <!-- RECOVERY STEP 1: IDENTIFICATION -->
+        <div id="recStep1">
+          <h3 style="font-size: 16px; margin-bottom: 6px;">Recuperação de Senha</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+            Digite o e-mail ou telefone cadastrado na sua conta para enviarmos o código de verificação.
+          </p>
+
+          <form onsubmit="handleRecoveryStep1(event)">
+            <div class="form-group">
+              <label class="form-label" for="recEmail">E-mail ou WhatsApp</label>
+              <div class="input-wrapper">
+                <input type="text" id="recEmail" class="form-input" placeholder="exemplo@iprveneza.com.br" required>
+                <i data-lucide="mail" class="input-icon"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);">
+              Enviar Código de Segurança <i data-lucide="send"></i>
+            </button>
+            <button type="button" class="btn-secondary" onclick="switchTab('login')">
+              Voltar ao Login
+            </button>
+          </form>
+        </div>
+
+        <!-- RECOVERY STEP 2: OTP VERIFICATION -->
+        <div id="recStep2" style="display: none;">
+          <h3 style="font-size: 16px; margin-bottom: 6px;">Digite o Código</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+            Enviamos um código de 6 dígitos para <strong id="sentTargetDisplay" style="color: var(--warning);">seu e-mail</strong>.
+          </p>
+
+          <form onsubmit="handleRecoveryStep2(event)">
+            <div class="otp-container">
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 1)" id="otp1" required>
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 2)" id="otp2" required>
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 3)" id="otp3" required>
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 4)" id="otp4" required>
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 5)" id="otp5" required>
+              <input type="text" maxlength="1" class="otp-box" onkeyup="moveOtpFocus(this, 6)" id="otp6" required>
+            </div>
+
+            <div style="text-align: center; font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+              Não recebeu? <button type="button" class="link-btn" id="btnResendOtp" onclick="resendOtpCode()">Reenviar código (<span id="resendTimer">30</span>s)</button>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);">
+              Validar Código <i data-lucide="shield-check"></i>
+            </button>
+            <button type="button" class="btn-secondary" onclick="goToStep(1)">
+              Corrigir E-mail
+            </button>
+          </form>
+        </div>
+
+        <!-- RECOVERY STEP 3: RESET PASSWORD -->
+        <div id="recStep3" style="display: none;">
+          <h3 style="font-size: 16px; margin-bottom: 6px;">Nova Senha</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+            Crie uma nova senha segura para acessar sua conta.
+          </p>
+
+          <form onsubmit="handleRecoveryStep3(event)">
+            <div class="form-group">
+              <label class="form-label" for="newPassword">Nova Senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="newPassword" class="form-input" placeholder="Mínimo de 6 caracteres" oninput="checkPasswordStrength(this.value)" required>
+                <i data-lucide="lock" class="input-icon"></i>
+                <button type="button" class="input-toggle" onclick="togglePasswordVisibility('newPassword', this)">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+              <div class="strength-meter">
+                <div class="strength-bar" id="strengthBar"></div>
+              </div>
+              <div class="strength-text" id="strengthText">Força da senha</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">Confirmar Nova Senha</label>
+              <div class="input-wrapper">
+                <input type="password" id="confirmPassword" class="form-input" placeholder="Repita a nova senha" required>
+                <i data-lucide="check-circle-2" class="input-icon"></i>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);">
+              Redefinir Senha <i data-lucide="check"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- RECOVERY STEP 4: SUCCESS -->
+        <div id="recStep4" style="display: none;" class="success-box">
+          <div class="success-icon">
+            <i data-lucide="check-check" style="width: 36px; height: 36px;"></i>
+          </div>
+          <h3 class="success-title">Senha Redefinida com Sucesso!</h3>
+          <p class="success-desc">
+            Sua senha foi atualizada com segurança. Agora você já pode fazer login no <strong>IPR Volts</strong> com as novas credenciais.
+          </p>
+          <button type="button" class="btn-primary" onclick="switchTab('login')">
+            Ir para a Tela de Login <i data-lucide="log-in"></i>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- DASHBOARD VIEW (AFTER LOGIN) -->
+      <div class="dashboard-view" id="dashboardView">
+        <div class="dashboard-header">
+          <div class="user-badge">
+            <div class="avatar" id="dashAvatar">VOL</div>
+            <div class="user-info">
+              <h3 id="dashUserName">Voluntário IPR</h3>
+              <p id="dashDept">Ministério de Louvor • 450 pts</p>
+            </div>
+          </div>
+          <button class="link-btn" onclick="handleLogout()" style="color: var(--danger);">
+            <i data-lucide="log-out"></i> Sair
+          </button>
+        </div>
+
+        <h4 style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Seu Painel de Serviços:</h4>
+
+        <div class="feature-grid">
+          <div class="feature-card" onclick="showToast('Abrindo Escalas Automáticas...', 'success')">
+            <i data-lucide="calendar"></i>
+            <h4>Minhas Escalas</h4>
+            <p>Próximo culto: Domingo 19:00h</p>
+          </div>
+          <div class="feature-card" onclick="showToast('Solicitação de Troca enviada com sucesso!', 'warning')">
+            <i data-lucide="repeat"></i>
+            <h4>Troca de Escala</h4>
+            <p>Solicitar ou aceitar trocas</p>
+          </div>
+          <div class="feature-card" onclick="showToast('Check-in realizado! +50 Pontos IPR Volts', 'success')">
+            <i data-lucide="qr-code"></i>
+            <h4>Check-in Culto</h4>
+            <p>Confirmar presença presencial</p>
+          </div>
+          <div class="feature-card" onclick="showToast('Abrindo Repertório e Cifras...', 'success')">
+            <i data-lucide="music"></i>
+            <h4>Cifras & Liturgia</h4>
+            <p>Músicas e ordens do culto</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast" id="toast">
+    <i data-lucide="info" class="toast-icon" id="toastIcon"></i>
+    <span id="toastMessage">Notificação</span>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
